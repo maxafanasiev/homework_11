@@ -32,6 +32,9 @@ def input_error(func):
         except IndexError:
             print('This name found! Enter another name.')
             return func(*args,**kwargs)
+        except ValueError:
+            print('Print date in format dd-mm-YYYY')
+            return func(*args,**kwargs)
     return(inner)
 
 
@@ -56,41 +59,43 @@ def hello():
 
 
 @input_error
-def add_record(name, phone):
+def add_record(name, phone='' ,birthday=''):
     clear()
-    rec = oop.Record(oop.Name(name),oop.Phone(phone))
+    rec = oop.Record(oop.Name(name),oop.Phone(phone),oop.Birthday(birthday))
     adress_book.addRecord(rec)
-    return f"{rec.name.value} : {[ phone.value for phone in adress_book[rec.name.value].phones]}\n"
+    return rec.print_record()
 
 
 def change_phone(name, old_phone, new_phone):
     clear()
     rec = adress_book[name]
     rec.change_phone(oop.Phone(old_phone),oop.Phone(new_phone))
-    return f"{rec.name.value} : {[ phone.value for phone in rec.phones]}\n"
+    return rec.print_record()
 
 
 def add_phone(name, phone):
     clear()
     rec = adress_book[name]
     rec.add_phone(oop.Phone(phone))
-    return f"{rec.name.value} : {[ phone.value for phone in rec.phones]}"
+    return rec.print_record()
 
 
 def delete_phone(name, phone):
     clear()
     rec = adress_book[name]
     rec.del_phone(oop.Phone(phone))
-    return f"{rec.name.value} : {[ phone.value for phone in rec.phones]}\n"
+    return rec.print_record()
+
+
+def days_to_birthday(name):
+    clear()
+    rec = adress_book[name]
+    return rec.days_to_birthday()
 
 
 def showall():
     clear()
-    res = ''
-    source = adress_book
-    for key, record in source.items():
-        res += f"{key} : {[ phone.value for phone in record.phones]}\n"
-    return res if res else "Address book is empty."
+    return adress_book.print_all()
 
 
 
@@ -122,6 +127,7 @@ COMMANDS = {'hello':hello,
             'delete phone': delete_phone,
             'add': add_record,
             'help':helper,
+            'days to bd':days_to_birthday,
             }
 
 
