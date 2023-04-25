@@ -50,6 +50,11 @@ def input_error(func):
     return(inner)
 
 
+def start():
+    clear()
+    print(f"CLI Address book bot is running...")
+
+
 def show_page(page_number=1, count=5):
     return adress_book.show_page(page_number, count)
 
@@ -160,24 +165,25 @@ def command_parse(s):
 
 
 COMMANDS = {'hello':hello,
+            'days to bd':days_to_birthday,
             'add phone': add_phone,
             'add birthday': add_birthday,
-            'change':change_phone,
+            'change phone':change_phone,
+            'delete phone': delete_phone,
             'find phone':phone,
             'show page':show_page,
             'show all':showall,
             'good bye':close,
             'exit':close,
             'close':close,
-            'delete phone': delete_phone,
             'add': add_record,
             'help':helper,
-            'days to bd':days_to_birthday,
             }
 
 
 @input_error
 def main():
+    start()
     while bot_working:
         s = input()
         command, arguments = command_parse(s)
