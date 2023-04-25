@@ -24,9 +24,6 @@ class AddressBook(UserDict):
             elif i >= end:
                 break
             
-        if count == 0 and page != 1:
-            yield from self.iterator(n, page=page-1)
-
     
     def save_to_file(self, filename):
         with open(filename, mode="wb") as file:
