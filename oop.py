@@ -1,5 +1,7 @@
 from collections import UserDict
 import datetime as DT
+import pickle
+import os
 
 
 class AddressBook(UserDict):
@@ -25,9 +27,29 @@ class AddressBook(UserDict):
         if count == 0 and page != 1:
             yield from self.iterator(n, page=page-1)
 
+    
+    def save_to_file(self, filename):
+        with open(filename, mode="wb") as file:
+         pickle.dump(self.data, file)
+
+
+    def load_from_file(self, filename):
+        try:
+            with open(filename, 'rb') as f:
+                if os.stat(filename).st_size == 0:
+                    self.data = {}
+                else:
+                    self.data = pickle.load(f)
+                    print("Address book loaded.")
+        except (FileNotFoundError, pickle.UnpicklingError):
+            with open(filename, 'wb') as f:
+                self.data = {}
+                pickle.dump(self.data, f)
+
 
     def show_page(self, page_number=1, count=5):
-        out = '-'*100 + '\n'
+        out = '|{:^98}|\n'.format(f" Page #{page_number}   |  Max {count} contacts per page.")
+        out += '-'*100 + '\n'
         out += '| {:^20} | {:^50} | {:^20} |\n'.format('Name', 'Phones', 'Birthday date')
         out += '-'*100 + '\n'
         if self.keys():
