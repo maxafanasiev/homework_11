@@ -9,6 +9,36 @@ class AddressBook(UserDict):
         else:
             print("Name already exist. Try add phone command for add extra phone.")
 
+
+    def iterator(self, n, page=1):
+        count = 0
+        start = (page - 1) * n
+        end = page * n
+        
+        for i, key in enumerate(self.keys()):
+            if i >= start and i < end:
+                yield key, self[key]
+                count += 1
+            elif i >= end:
+                break
+            
+        if count == 0 and page != 1:
+            yield from self.iterator(n, page=page-1)
+
+
+    def show_page(self, page_number=1, count=5):
+        out = '-'*100 + '\n'
+        out += '| {:^20} | {:^50} | {:^20} |\n'.format('Name', 'Phones', 'Birthday date')
+        out += '-'*100 + '\n'
+        if self.keys():
+            for key, value in self.iterator(int(count), page=int(page_number)):
+                out += value.print_record()
+        else:
+            out += '| {:^96} |\n'.format('Adress book is empty.')
+        out += '-'*100 + '\n'
+        return out
+
+
     def print_all(self):
         out = '-'*100 + '\n'
         out += '| {:^20} | {:^50} | {:^20} |\n'.format('Name', 'Phones', 'Birthday date')
@@ -23,24 +53,52 @@ class AddressBook(UserDict):
 
 
 class Field:
-    def __init__(self, value):
-        self.value = value
+    def __init__(self):
+        self._value = None
 
+    @property
+    def value(self):
+        return self._value
+       
+    @value.setter
+    def value(self, value):
+        self._value = value
 
-class Birthday(Field):
-    def __init__(self,value=None):
-        if value:
-            self.value = DT.datetime.strptime(value, '%d-%m-%Y')
-        else:
-            self.value = None
-    
 
 class Name(Field):
     pass
 
 
-class Phone(Field):
-    pass
+class Birthday(Field):
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if value:
+            try:
+                self._value = DT.datetime.strptime(value, '%d-%m-%Y')
+            except ValueError:
+                print('Print date in format dd-mm-YYYY')
+                raise ValueError
+        else:
+            self._value = ''
+
+    
+
+class Phone(Field):  
+    @property
+    def value(self):
+        return self._value
+
+
+    @value.setter
+    def value(self, value):
+        if not value.isdigit() and value:
+            print('Phone must be a numbers.')
+            raise ValueError
+        self._value = value
 
 
 class Record:
@@ -51,9 +109,10 @@ class Record:
             self.phones.append(phone)
         self.birthday = birthday
 
+
     def print_record(self):
         if self.phones:
-            phones = ','.join(phone.value for phone in self.phones)
+            phones = ', '.join(phone.value for phone in self.phones)
         else:
             phones = 'No phones found.'
         bd = str(self.birthday.value.date()) if self.birthday.value else 'No birthday date.'
@@ -80,6 +139,13 @@ class Record:
             print("This phone already added.")
 
 
+    def add_birthday(self, birthday: Birthday):
+        if birthday.value != self.birthday.value and not self.birthday.value:
+            self.birthday = birthday
+        else:
+            print(f"{self.name.value} birthday already added.")
+
+
     def del_phone(self, phone: Phone):
         for n in self.phones:
             if n.value == phone.value:
@@ -92,6 +158,10 @@ class Record:
         elif old_phone.value not in [phone.value for phone in self.phones]:
             print("This phone not found!")
         else:
-            self.del_phone(old_phone)
-            self.add_phone(new_phone)
+            for phone in self.phones:
+                if old_phone.value == phone.value:
+                    phone.value = new_phone.value
+
+            # self.del_phone(old_phone)
+            # self.add_phone(new_phone)
             print("Phone changed.")
