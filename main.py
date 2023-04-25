@@ -6,28 +6,6 @@ address_book = oop.AddressBook()
 bot_working = True
 clear = lambda: os.system('clear')
 
-# #for test
-# a1 = oop.Name()
-# a1.value = 'Max'
-# b1 = oop.Phone()
-# b1.value = '12'
-# c1 = oop.Birthday()
-
-# a2 = oop.Name()
-# a2.value = 'Ann'
-# b2 = oop.Phone()
-# b2.value = '13'
-# c2 = oop.Birthday()
-# c2.value = '12-12-2001'
-# rec1 = oop.Record(a1,b1,c1)
-# rec2 = oop.Record(a2,b2,c2)
-
-# add_ph = oop.Phone()
-# add_ph.value = '34343434'
-# rec1.add_phone(add_ph)
-# address_book.addRecord(rec1)
-# address_book.addRecord(rec2)
-
 
 def input_error(func):
     def inner(*args,**kwargs):
